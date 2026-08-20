@@ -1,0 +1,132 @@
+functions = [
+{
+    "name": "extract_car_details",
+    "description": "Extracts key details from car reviews, including manufacturer (OEM), model name, part details with model year and fuel type, and sentiment analysis.",
+    "parameters": {
+        "type": "object",
+        "properties": {
+            "isRelevantCarReview": {
+                "type": "string",
+                "description": (
+                    "Indicates whether the review provides genuine user feedback about a car's performance, features, or ownership experience. "
+                    "Possible values: 'Yes' (if the review is an authentic, user-generated review specifically about the car). "
+                    "A review qualifies as 'Yes' if it includes user feedback on:\n"
+                    "1. Issues and concerns or positives about Performance, mileage, driving experience, comfort, and safety.\n"
+                    "2. Features such as infotainment, interior quality, space, and technology.\n"
+                    "3. Ownership experience, including any aspect of after-sales service such as: delays in service, staff behavior, quality of repair, damage during service, miscommunication, dealership responsiveness, servicing costs, availability of parts, or overall customer support experience. These should be considered valid indicators of user feedback about the car.\n"
+                    "4. Brand perception: trust in brands, the wide range of models and variants, and reliability over time. Any downside for the brand. \n"
+                    "'No' (if the review is promotional, irrelevant, general informtion, sales performance of manufacturer/OEM or includes elements like offers or marketing content—even if related to a car)."
+                ),
+                "enum": ["Yes", "No"]
+            },
+            "OverallSentiment": {
+                "type": "string",
+                "description": "Overall User sentiment in the review (e.g., positive, negative, neutral).",
+                "enum": ["positive", "negative", "neutral"]
+            }, 
+            "carreviewdetails": {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "CarOEM": {
+                            "type": "string",
+                            "description": "The manufacturer of the car (e.g., Toyota, Ford, Maruti Suzuki, Kia, Tata, Mahindra, Hyundai). Consider Maruti Suzuki as one entity."
+                        },
+                        "BrandReviewKPIs": {
+                            "type": "array",
+                            "description": ("list of all applicable brand-wide KPIs mentioned or implied in the user review and Sentiment towards KPIs."),
+                            "minItems": 1,
+                            "maxItems": 12,
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                    "BrandPerformanceIndicator": {
+                                        "type": ["string", "null"],
+                                        "description": (
+                                        "Extract all applicable brand-wide performance KPIs mentioned in the user review. If the review implies a KPI without naming it directly, map it to the closest matching enum value. Must match one or more of the KPI enum values exactly. Do not create new KPI values"
+                                        ),
+                                        "enum": [
+                                            "Vehicle Performance", "Design & Aesthetics", "Technology & Features", "Mileage & Fuel efficiency",
+                                            "Service & After-Sales", "Ride Comfort", "Safety and Driver Assistance","Pricing & Value & Resale Value",
+                                            "Ownership Experience", "Brand Perception", "Environmental Impact", "Product Quality"
+                                        ]
+                                    },
+                                    "BrandSentiment": {
+                                        "type": ["string", "null"],
+                                        "description": "User sentiment towards the performance indicator (e.g., positive, negative, neutral).",
+                                        "enum": ["positive", "negative", "neutral"]
+                                    }
+                                }
+                            }
+                        },
+                        "carmodelreview": {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                    "CarModel": {
+                                        "type": ["string", "null"],
+                                        "description": "The model of the car (e.g., Camry, Mustang)."
+                                    },
+                                    "Sentiment": {
+                                        "type": ["string", "null"],
+                                        "description": "User sentiment regarding the Car OEM and/or model (e.g., positive, negative, neutral).",
+                                        "enum": ["positive", "negative", "neutral"]
+                                    },
+                                    "CarPartsDetails": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "object",
+                                            "properties": {
+                                                "PartName": {
+                                                    "type": "string",
+                                                    "description": "Car parts mentioned in the review in general terms (e.g., engine, brakes, suspension, Tires, coolant, AC, battery)."
+                                                },
+                                                "SpecPartName": {
+                                                    "type": "string",
+                                                    "description": (
+                                                        "Specific car part from the predefined list. If an exact match is not found, "
+                                                        "choose the closest relevant part instead of leaving it blank."
+                                                    ),
+                                                    "enum": keywords['part_name']
+                                                },
+                                                "PerformanceIndicator": {
+                                                    "type": ["string", "null"],
+                                                    "description": "Performance metrics for the part in max 5 words."
+                                                },
+                                                "ModelYear": {
+                                                    "type": ["string", "null"],
+                                                    "description": "The model year of the car (e.g., 2014, 2008)."
+                                                },
+                                                "FuelType": {
+                                                    "type": ["string", "null"],
+                                                    "description": (
+                                                        "Type of fuel the car uses mentioned the review (e.g., petrol, diesel, electric)."
+                                                    ),
+                                                    "enum": ["Petrol", "Diesel", "Electric/EV", "CNG", "LPG", "Hybrid"]
+                                                },
+                                                "SpecSentiment": {
+                                                    "type": ["string", "null"],
+                                                    "description": "User sentiment regarding the part (e.g., positive, negative, neutral).",
+                                                    "enum": ["positive", "negative", "neutral"]
+                                                }
+                                            }
+                                        },
+                                        "minItems": 1,
+                                        "maxItems": 100,
+                                        "description": (
+                                            "List of car parts and specific parts, including performace indicators, sentiments, model year and fuel type."
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "required": ["isRelevantCarReview", "OverallSentiment", "carreviewdetails"]
+    }
+}
+]
