@@ -1,0 +1,96 @@
+functions = [
+    {
+        "name": "extract_car_details",
+        "description": "Extracts key details from car reviews, including manufacturer (OEM), model name, domain with category, and sentiment analysis.",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "isRelevantCarReview": {
+                    "type": "string",
+                    "description": (
+                        "Indicates whether the review provides genuine user feedback about a car's performance, features, ownership experience, brand perception, Environmental Impact, Design and Aesthetics, Vehicle Experience, Technology and features, and Safety."
+                        "Possible values: 'Yes' (if the review is an authentic, user-generated review specifically about the car)."
+                        "A review qualifies as 'Yes' if it includes user feedback on:\n"
+                        "1. Issues and concerns or positives about Performance, mileage, driving experience, comfort, and safety.\n"
+                        "2. Features such as infotainment, interior quality, space, and technology.\n"
+                        "3. Ownership experience, including any aspect of after-sales service such as: delays in service, staff behavior, quality of repair, damage during service, miscommunication, dealership responsiveness, servicing costs, availability of parts, or overall customer support experience. These should be considered valid indicators of user feedback about the car.\n"
+                        "4. Brand perception: trust in brands, the wide range of models and variants, and reliability over time. Any downside for the brand. \n"
+                        "5. Environment Impact: user views on the car's fuel efficiency, emissions, hybrid/electric options, and sustainability-related aspects."
+                        "6. Design and Aesthetics: feedback on exterior look, styling, color options, and visual appeal."
+                        "7. Vehicle Experience: day-to-day usability, convenience, ease of driving, and practicality for different use cases (e.g., city driving, long trips)."
+                        "8. Technology and features:  user interaction with specific technologies like ADAS, navigation, connectivity, or driver assistance systems."
+                        "9. Safety: user opinion on safety features, crash ratings, number of airbags, real-life accident experience, or sense of security while driving."
+                        "'No' (if the review is promotional, irrelevant, general informtion, sales performance of manufacturer/OEM or includes elements like offers or marketing content—even if related to a car)."
+                    ),
+                    "enum": ["Yes", "No"]
+                },
+                "OverallSentiment": {
+                    "type": "string",
+                    "description": "Overall User sentiment in the car review (e.g., positive, negative, neutral).",
+                    "enum": ["positive", "negative", "neutral"]
+                }, 
+                "carreviewdetails": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "CarOEM": {
+                                "type": "string",
+                                "description": "The manufacturer of the car (e.g., Toyota, Ford, Maruti Suzuki, Kia, Tata, Mahindra, Hyundai). Consider Maruti Suzuki as one entity."
+                            },
+                            "carmodelreview": {
+                                "type": "array",
+                                "items": {
+                                    "type": "object",
+                                    "properties": {
+                                        "CarModel": {
+                                            "type": ["string", "null"],
+                                            "description": "The model of the car (e.g., Camry, Mustang)."
+                                        },
+                                        "Sentiment": {
+                                            "type": ["string", "null"],
+                                            "description": "User sentiment regarding the Car OEM and/or model (e.g., positive, negative, neutral).",
+                                            "enum": ["positive", "negative", "neutral"]
+                                        },
+                                        "CarPartsDetails": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "Domain": {
+                                                        "type": "string",
+                                                        "description": "domain from enum list on which Car review talks about.",
+                                                        "enum": keywords['domain']
+                                                    },
+                                                    "Category": {
+                                                        "type": "string",
+                                                        "description": (
+                                                            "Specific category from the enum list. If an exact match is not found, "
+                                                            "choose the closest relevant part instead of leaving it blank."
+                                                        ),
+                                                        "enum": keywords['category']
+                                                    },
+                                                    "SpecSentiment": {
+                                                        "type": ["string", "null"],
+                                                        "description": "User sentiment regarding the domain and category (e.g., positive, negative, neutral).",
+                                                        "enum": ["positive", "negative", "neutral"]
+                                                    }
+                                                }
+                                            },
+                                            "minItems": 1,
+                                            "maxItems": 100,
+                                            "description": (
+                                                "Extract all applicable combinations of Domain and Category mentioned in the review based on the enum list, along with the corresponding user sentiment for each." 
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "required": ["isRelevantCarReview", "OverallSentiment", "carreviewdetails"]
+        }
+    }
+    ]
